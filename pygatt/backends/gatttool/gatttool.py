@@ -228,6 +228,7 @@ class GATTToolBackend(BLEBackend):
         self._send_lock = threading.Lock()
         self._auto_reconnect = False
         self._reconnecting = False
+        self._connection_timeout = DEFAULT_CONNECT_TIMEOUT_S
         self._search_window_size = search_window_size
         self._scan = None
         self._max_read = max_read
@@ -406,6 +407,7 @@ class GATTToolBackend(BLEBackend):
     def connect(self, address, timeout=DEFAULT_CONNECT_TIMEOUT_S,
                 address_type=BLEAddressType.public, auto_reconnect=False):
         log.info('Connecting to %s with timeout=%s', address, timeout)
+        self._connection_timeout = timeout
         self.sendline('sec-level low')
         self._address = address
         self._auto_reconnect = auto_reconnect
@@ -451,8 +453,10 @@ class GATTToolBackend(BLEBackend):
             # the reconnection process has to be started in parallel, otherwise
             # the call is never finished
             log.info("Connection to %s lost. Reconnecting...", self._address)
-            reconnect_thread = threading.Thread(target=self.reconnect,
-                                                args=(self._connected_device, ))
+            reconnect_thread = threading.Thread(
+                target=self.reconnect,
+                args=(self._connected_device,),
+                kwargs={'timeout': self._connection_timeout})
             reconnect_thread.start()
         else:
             try:
@@ -460,7 +464,7 @@ class GATTToolBackend(BLEBackend):
             except NotConnectedError:
                 pass
 
-    @at_most_one_device
+    @ at_most_one_device
     def reconnect(self, timeout=DEFAULT_CONNECT_TIMEOUT_S):
         while self._auto_reconnect:
             log.info("Connecting to %s with timeout=%s", self._address,
@@ -481,7 +485,7 @@ class GATTToolBackend(BLEBackend):
                 log.info(message)
                 time.sleep(DEFAULT_RECONNECT_DELAY)
 
-    @at_most_one_device
+    @ at_most_one_device
     def disconnect(self, *args, **kwargs):
         self._auto_reconnect = False  # disables any running reconnection
         if not self._receiver.is_set("disconnected"):
@@ -490,7 +494,7 @@ class GATTToolBackend(BLEBackend):
         # TODO maybe call a disconnected callback on the device instance, so the
         # device knows if it was asynchronously disconnected?
 
-    @at_most_one_device
+    @ at_most_one_device
     def bond(self, *args, **kwargs):
         log.info('Bonding')
         self.sendline('sec-level medium')
@@ -511,7 +515,7 @@ class GATTToolBackend(BLEBackend):
         except AttributeError:
             pass
 
-    @at_most_one_device
+    @ at_most_one_device
     def discover_characteristics(self, timeout=5):
         self._characteristics = {}
         self._receiver.register_callback(
@@ -550,7 +554,7 @@ class GATTToolBackend(BLEBackend):
         if self._connected_device is not None:
             self._connected_device.receive_notification(handle, values)
 
-    @at_most_one_device
+    @ at_most_one_device
     def char_write_handle(self, handle, value, wait_for_response=True,
                           timeout=30):
         """
@@ -581,7 +585,7 @@ class GATTToolBackend(BLEBackend):
 
         log.info('Sent cmd=%s', cmd)
 
-    @at_most_one_device
+    @ at_most_one_device
     def char_read(self, uuid, timeout=1):
         """
         Reads a Characteristic by uuid.
@@ -595,7 +599,7 @@ class GATTToolBackend(BLEBackend):
         rval = self._receiver.last_value("value", "after").split()[1:]
         return bytearray([int(x, 16) for x in rval])
 
-    @at_most_one_device
+    @ at_most_one_device
     def char_read_handle(self, handle, timeout=4):
         """
         Reads a Characteristic by handle.
@@ -610,7 +614,7 @@ class GATTToolBackend(BLEBackend):
                                          ).split()[1:]
         return bytearray([int(x, 16) for x in rval])
 
-    @at_most_one_device
+    @ at_most_one_device
     def exchange_mtu(self, mtu, timeout=1):
         cmd = 'mtu {}'.format(mtu)
 
