@@ -1,6 +1,5 @@
 py_library(
     name = "pygatt_lib",
-    srcs = ["__init.py__"],
     visibility = [
       "//visibility:public",
     ],
