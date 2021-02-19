@@ -455,8 +455,7 @@ class GATTToolBackend(BLEBackend):
             log.info("Connection to %s lost. Reconnecting...", self._address)
             reconnect_thread = threading.Thread(
                 target=self.reconnect,
-                args=(self._connected_device,),
-                kwargs={'timeout': self._connection_timeout})
+                args=(self._connected_device, self._connection_timeout))
             reconnect_thread.start()
         else:
             try:
