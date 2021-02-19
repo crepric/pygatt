@@ -3,8 +3,8 @@ import uuid
 from mock import MagicMock, patch
 from nose.tools import ok_, eq_
 
-from pygatt import BLEDevice
-from pygatt.backends import Characteristic
+from pygatt.device import BLEDevice
+from pygatt.backends.backend import Characteristic
 
 
 class TestBLEDevice(BLEDevice):
@@ -13,7 +13,8 @@ class TestBLEDevice(BLEDevice):
 
     def discover_characteristics(self):
         return {
-            self.CHAR_UUID: Characteristic(self.CHAR_UUID, self.EXPECTED_HANDLE)
+            self.CHAR_UUID: Characteristic(
+                self.CHAR_UUID, self.EXPECTED_HANDLE)
         }
 
 

@@ -14,7 +14,7 @@ from uuid import UUID
 from contextlib import contextmanager
 
 from pygatt.exceptions import NotConnectedError, BLEError, NotificationTimeout
-from pygatt.backends import BLEBackend, Characteristic, BLEAddressType
+from pygatt.backends.backend import BLEBackend, Characteristic, BLEAddressType
 from pygatt.backends.backend import DEFAULT_CONNECT_TIMEOUT_S
 from .device import GATTToolBLEDevice
 
@@ -29,6 +29,7 @@ def _hex_value_parser(x):
 
 def is_windows():
     return platform.system() == 'Windows'
+
 
 try:
     import pexpect
@@ -475,8 +476,8 @@ class GATTToolBackend(BLEBackend):
             except NotificationTimeout:
                 message = ("Timed out connecting to {0} after {1} seconds. "
                            "Retrying in {2} seconds".format(
-                                self._address, timeout,
-                                DEFAULT_RECONNECT_DELAY))
+                               self._address, timeout,
+                               DEFAULT_RECONNECT_DELAY))
                 log.info(message)
                 time.sleep(DEFAULT_RECONNECT_DELAY)
 

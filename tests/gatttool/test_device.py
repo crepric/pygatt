@@ -4,7 +4,7 @@ from mock import MagicMock, patch
 from nose.tools import ok_, eq_, raises
 
 from pygatt.exceptions import NotConnectedError
-from pygatt.backends import Characteristic
+from pygatt.backends.backend import Characteristic
 from pygatt.backends.gatttool.device import GATTToolBLEDevice
 
 
@@ -18,7 +18,8 @@ class GATTToolBLEDeviceTests(unittest.TestCase):
         self.expected_handle = 99
         self.char_uuid = uuid.uuid4()
         self.backend.discover_characteristics.return_value = {
-            self.char_uuid: Characteristic(self.char_uuid, self.expected_handle)
+            self.char_uuid: Characteristic(
+                self.char_uuid, self.expected_handle)
         }
 
     def test_bond(self):

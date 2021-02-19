@@ -6,7 +6,8 @@
     characteristic. This example was tested with the Health Thermometer Profile,
     but can be easily modified to work with any other profile.
 """
-import pygatt
+
+from pygatt.backends.gatttool.gatttool import GATTToolBackend
 
 
 def data_handler_cb(handle, value):
@@ -31,7 +32,7 @@ def main():
     # pexpect will not catch them all. We increase the search window to
     # 2048 bytes for the this example. By default, it is 200.
     # Note: We need an instance of GATToolBackend per each device connection
-    adapter = pygatt.GATTToolBackend(search_window_size=2048)
+    adapter = GATTToolBackend(search_window_size=2048)
 
     try:
         # Start the adapter

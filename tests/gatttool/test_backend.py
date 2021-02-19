@@ -5,7 +5,7 @@ from mock import patch, MagicMock
 import time
 import unittest
 
-from pygatt.backends import GATTToolBackend
+from pygatt.backends.gatttool.gatttool import GATTToolBackend
 
 
 class GATTToolBackendTests(unittest.TestCase):
@@ -52,9 +52,9 @@ class GATTToolBackendTests(unittest.TestCase):
     def test_disconnect_callback(self):
         # Just keep saying we got the "Disconnected" response
         def rate_limited_expect_d(*args, **kwargs):
-                time.sleep(0.001)
-                # hard code the "Disconnected" event
-                return 1
+            time.sleep(0.001)
+            # hard code the "Disconnected" event
+            return 1
 
         mock_callback = MagicMock()
         address = "11:22:33:44:55:66"

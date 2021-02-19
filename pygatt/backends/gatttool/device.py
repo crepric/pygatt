@@ -1,7 +1,8 @@
 import functools
 import logging
 
-from pygatt import BLEDevice, exceptions
+from pygatt.exceptions import NotConnectedError
+from pygatt.device import BLEDevice
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ def connection_required(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         if not self._connected:
-            raise exceptions.NotConnectedError()
+            raise NotConnectedError()
         return func(self, *args, **kwargs)
     return wrapper
 
@@ -26,6 +27,7 @@ class GATTToolBLEDevice(BLEDevice):
     every command has to synchronize around a the same interactive gatttool
     session, using the same connection.
     """
+
     def __init__(self, address, backend):
         super(GATTToolBLEDevice, self).__init__(address)
         self._backend = backend
