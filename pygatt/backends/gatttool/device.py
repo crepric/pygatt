@@ -69,3 +69,9 @@ class GATTToolBLEDevice(BLEDevice):
 
     def remove_disconnect_callback(self, callback):
         self._backend._receiver.remove_callback("disconnected", callback)
+
+    def register_connect_callback(self, callback):
+        self._backend._receiver.register_callback("connect", callback)
+
+    def remove_connect_callback(self, callback):
+        self._backend._receiver.remove_callback("connect", callback)
